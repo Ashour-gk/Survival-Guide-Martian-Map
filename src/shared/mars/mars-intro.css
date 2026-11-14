@@ -1,0 +1,31 @@
+.mars-intro { position: relative; isolation: isolate; }
+.mars-intro::before { content:""; position:fixed; z-index:0; pointer-events:none; inset:-18%; background:radial-gradient(ellipse at 17% 24%,rgba(22,105,145,.14),transparent 36%),radial-gradient(ellipse at 78% 36%,rgba(128,62,47,.13),transparent 32%),radial-gradient(ellipse at 52% 86%,rgba(43,107,132,.11),transparent 38%); transform:translate3d(0,0,0); animation:nebula-drift 32s ease-in-out infinite alternate; }
+.mars-intro > header,.mars-intro > section { position:relative; z-index:1; }
+.intro-ambient { position:fixed; z-index:0; inset:0; overflow:hidden; pointer-events:none; }
+.intro-ambient::before,.intro-ambient::after { content:""; position:absolute; width:clamp(18rem,44vw,44rem); aspect-ratio:1; border:1px solid rgba(142,201,231,.08); border-radius:50%; background:radial-gradient(circle at 50% 50%,rgba(48,117,151,.11),rgba(48,117,151,.035) 45%,transparent 70%); will-change:transform; }
+.intro-ambient::before { top:5%; left:-19%; box-shadow:0 0 0 28px rgba(142,201,231,.018),0 0 0 76px rgba(142,201,231,.014); animation:ambient-drift-a 37s ease-in-out infinite alternate; }
+.intro-ambient::after { right:-18%; bottom:-34%; width:clamp(22rem,52vw,54rem); border-color:rgba(227,151,112,.075); background:radial-gradient(circle at 50% 50%,rgba(175,76,51,.105),rgba(175,76,51,.025) 48%,transparent 71%); box-shadow:0 0 0 34px rgba(227,151,112,.014),0 0 0 92px rgba(227,151,112,.012); animation:ambient-drift-b 46s ease-in-out infinite alternate; }
+.intro-stars { position: absolute; inset: 0; z-index: 0; opacity: .55; pointer-events:none; background-image: radial-gradient(1px 1px at 8% 21%,#d3efff 48%,transparent 60%),radial-gradient(1px 1px at 31% 67%,#d3efff 48%,transparent 60%),radial-gradient(1.5px 1.5px at 70% 13%,#d3efff 48%,transparent 60%),radial-gradient(1px 1px at 87% 48%,#d3efff 48%,transparent 60%),radial-gradient(1px 1px at 48% 35%,#d3efff 48%,transparent 60%),radial-gradient(1px 1px at 18% 82%,#d3efff 48%,transparent 60%); background-size: 420px 360px; mask-image: linear-gradient(to bottom,#000,transparent 88%); }
+.intro-stars::before,.intro-stars::after { content:""; position:fixed; inset:-20%; pointer-events:none; background-image:radial-gradient(2px 2px at 12% 32%,rgba(223,244,255,.85) 45%,transparent 60%),radial-gradient(1px 1px at 34% 72%,rgba(223,244,255,.7) 45%,transparent 60%),radial-gradient(1.5px 1.5px at 68% 27%,rgba(223,244,255,.75) 45%,transparent 60%),radial-gradient(1px 1px at 84% 64%,rgba(223,244,255,.8) 45%,transparent 60%),radial-gradient(1px 1px at 52% 48%,rgba(223,244,255,.65) 45%,transparent 60%); background-size:560px 480px; will-change:transform,opacity; }
+.intro-stars::before { opacity:.27; animation:star-drift 95s linear infinite,star-glimmer 9s ease-in-out infinite alternate; }
+.intro-stars::after { opacity:.18; background-position:170px 120px; background-size:730px 610px; animation:star-drift 135s linear infinite reverse,star-glimmer 13s ease-in-out infinite alternate-reverse; }
+.intro-mark { display:grid; width:28px; height:28px; place-items:center; border:1px solid #8ec9e7; border-radius:50%; color:#8ec9e7; font-family:ui-monospace,monospace; font-size:12px; }
+.intro-title-accent { color:#9ad7f2; text-shadow:0 0 50px rgba(108,197,239,.22); }
+.intro-orbit { position:absolute; width:88%; aspect-ratio:1; border:1px solid rgba(190,225,244,.13); border-radius:50%; transform:rotateX(66deg) rotateZ(-22deg); }
+.intro-orbit-one { animation:intro-orbit 28s linear infinite; }
+.intro-orbit-two { width:104%; border-color:rgba(190,225,244,.07); transform:rotateX(67deg) rotateZ(42deg); animation:intro-orbit 38s linear infinite reverse; }
+.intro-glow { position:absolute; z-index:-1; width:76%; aspect-ratio:1; border-radius:50%; background:radial-gradient(circle,rgba(73,157,197,.19),rgba(5,29,48,.04) 55%,transparent 72%); filter:blur(18px); }
+.mars-globe { position:relative; aspect-ratio:1; width:100%; overflow:hidden; border-radius:50%; background:radial-gradient(circle at 34% 29%,#d29b72 0,#854c34 42%,#321e1c 75%,#100f16 100%); box-shadow:inset -28px -15px 48px rgba(0,0,0,.7),inset 10px 8px 30px rgba(255,205,157,.13),0 22px 100px rgba(0,0,0,.48),0 0 80px rgba(205,108,61,.12); transform:translateZ(0); }
+.mars-globe-texture { position:absolute; left:0; top:22%; width:100%; height:56%; overflow:hidden; }
+.mars-globe-texture img { position:absolute; width:12.5%; height:25%; object-fit:fill; opacity:.94; }
+.mars-globe-shade { position:absolute; inset:0; border-radius:inherit; background:linear-gradient(90deg,rgba(7,12,17,.03) 0%,rgba(9,11,17,.08) 35%,rgba(5,9,14,.46) 72%,rgba(1,5,11,.88) 100%),radial-gradient(ellipse at 28% 22%,rgba(255,233,204,.2),transparent 38%); box-shadow:inset -26px -6px 48px rgba(0,0,0,.55); pointer-events:none; }
+.mars-globe-rim { position:absolute; inset:0; border:1px solid rgba(243,193,153,.18); border-radius:inherit; box-shadow:inset 1px 1px 8px rgba(255,224,188,.13),0 0 30px rgba(201,125,88,.08); pointer-events:none; }
+.intro-planet { animation:planet-float 8s ease-in-out infinite; will-change:transform; }
+@keyframes intro-orbit { to { transform:rotateX(66deg) rotateZ(338deg); } }
+@keyframes nebula-drift { from { transform:translate3d(-1.2%,0,0) scale(1); } to { transform:translate3d(1.2%,-.8%,0) scale(1.025); } }
+@keyframes ambient-drift-a { from { transform:translate3d(0,0,0) rotate(0deg); } to { transform:translate3d(8vw,5vh,0) rotate(18deg); } }
+@keyframes ambient-drift-b { from { transform:translate3d(0,0,0) rotate(0deg); } to { transform:translate3d(-7vw,-6vh,0) rotate(-15deg); } }
+@keyframes star-drift { from { transform:translate3d(0,0,0); } to { transform:translate3d(-4%,3%,0); } }
+@keyframes star-glimmer { from { opacity:.12; } to { opacity:.38; } }
+@keyframes planet-float { 0%,100% { transform:translate3d(0,0,0); } 50% { transform:translate3d(0,-4px,0); } }
+@media (prefers-reduced-motion: reduce) { .mars-intro::before,.intro-ambient::before,.intro-ambient::after,.intro-stars::before,.intro-stars::after,.intro-orbit-one,.intro-orbit-two,.intro-planet { animation:none; will-change:auto; } }

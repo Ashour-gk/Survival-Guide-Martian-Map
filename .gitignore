@@ -1,0 +1,15 @@
+node_modules
+dist
+*.local
+.env
+.env.*
+!.env.example
+appsettings.Local.json
+src/MarsExplorer.Api/appsettings.Local.json
+**/bin/
+**/obj/
+*.db
+*.db-shm
+*.db-wal
+mars-uploads/
+.DS_Store

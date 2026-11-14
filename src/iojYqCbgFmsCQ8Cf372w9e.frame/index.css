@@ -1,0 +1,74 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+@import 'tailwindcss';
+
+/*
+ * MARS EXPLORER design system
+ * Palette: #012a4a #013a63 #01497c #014f86 #2a6f97 #2c7da0 #468faf #61a5c2 #89c2d9 #a9d6e5
+ *   background  space-950 / space-900     surfaces  space-900 / space-800
+ *   lines       space-700                 primary   space-300 (actions on dark)
+ *   accent      space-100                 text      space-50 (tint of #a9d6e5), muted space-200
+ * Signal colours are reserved for safety state and never used decoratively.
+ */
+@theme {
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --color-space-50: #e6f3f8;
+  --color-space-100: #a9d6e5;
+  --color-space-200: #89c2d9;
+  --color-space-300: #61a5c2;
+  --color-space-400: #468faf;
+  --color-space-500: #2c7da0;
+  --color-space-600: #2a6f97;
+  --color-space-700: #014f86;
+  --color-space-800: #01497c;
+  --color-space-900: #013a63;
+  --color-space-950: #012a4a;
+  --color-ink: #011d33;
+
+  --color-route: #a9d6e5;
+  --color-caution: #ffc857;
+  --color-hazard: #ff7a59;
+}
+
+html,
+body,
+#root {
+  background: var(--color-space-950);
+  color: var(--color-space-50);
+  font-family: var(--font-sans);
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+input[type='range'] {
+  accent-color: var(--color-space-100);
+}
+/* Mars Explorer scrollbar: visible, compact, and consistent across browsers. */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #468faf #012a4a;
+  scrollbar-gutter: stable;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #468faf #012a4a;
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #012a4a; border: 1px solid rgba(97, 165, 194, 0.12); }
+::-webkit-scrollbar-thumb {
+  min-height: 36px;
+  background: linear-gradient(180deg, #61a5c2 0%, #2c7da0 100%);
+  border: 2px solid #012a4a;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #a9d6e5 0%, #468faf 100%); }
+::-webkit-scrollbar-corner { background: #012a4a; }
+
+@media (prefers-reduced-motion: no-preference) {
+  ::-webkit-scrollbar-thumb { transition: background 160ms ease; }
+}

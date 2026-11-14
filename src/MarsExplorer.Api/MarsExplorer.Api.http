@@ -1,0 +1,6 @@
+@MarsExplorer.Api_HostAddress = http://localhost:5013
+
+GET {{MarsExplorer.Api_HostAddress}}/health
+Accept: application/json
+
+###
