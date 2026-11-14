@@ -15,17 +15,19 @@ public sealed record LoginRequest(string CrewId, string Password);
 
 [ApiController]
 [Route("api/v1/auth")]
-public sealed class AuthController(MarsExplorerDbContext db, IPasswordHasher<ApplicationUser> hasher, IConfiguration configuration, IWebHostEnvironment environment) : ControllerBase
+public sealed class AuthController(MarsExplorerDbContext db, IPasswordHasher<ApplicationUser> hasher, IConfiguration configuration) : ControllerBase
 {
     [HttpGet("demo-account")]
     public IActionResult DemoAccount()
     {
-        if (!environment.IsDevelopment()) return NotFound();
+        Response.Headers.CacheControl = "no-store";
+        var crewId = configuration["MarsExplorer:DemoCrewId"]?.Trim();
+        var password = configuration["MarsExplorer:DemoPassword"];
         return Ok(new
         {
-            crewId = configuration["MarsExplorer:TestCrewId"]?.Trim() is { Length: > 0 } crewId ? crewId : "MARS-DEMO",
-            password = configuration["MarsExplorer:TestPassword"] is { Length: > 0 } password ? password : "MarsDemoLocal2026!",
-            label = "Local development demo account"
+            crewId = string.IsNullOrWhiteSpace(crewId) ? DemoAccountDefaults.CrewId : crewId,
+            password = string.IsNullOrWhiteSpace(password) ? DemoAccountDefaults.Password : password,
+            label = "Public read-only demo account"
         });
     }
 
@@ -38,14 +40,17 @@ public sealed class AuthController(MarsExplorerDbContext db, IPasswordHasher<App
         var user = await db.Users.FirstOrDefaultAsync(x => x.CrewId == request.CrewId.Trim(), ct);
         if (user is null) return Unauthorized(new { code = "invalid_credentials", message = "Crew ID or password is incorrect." });
         if (user.Status != "Active") return StatusCode(403, new { code = "inactive", message = "This account is inactive. Contact your system administrator." });
-        if (user.LockoutEnd > DateTimeOffset.UtcNow)
+        var demoCrewId = configuration["MarsExplorer:DemoCrewId"]?.Trim();
+        demoCrewId = string.IsNullOrWhiteSpace(demoCrewId) ? DemoAccountDefaults.CrewId : demoCrewId;
+        var isDemoAccount = string.Equals(user.CrewId, demoCrewId, StringComparison.OrdinalIgnoreCase);
+        if (!isDemoAccount && user.LockoutEnd > DateTimeOffset.UtcNow)
             return StatusCode(423, new { code = "locked", message = "Account temporarily locked. Try again in 15 minutes." });
 
         var passwordOk = hasher.VerifyHashedPassword(user, user.PasswordHash, request.Password) != PasswordVerificationResult.Failed;
         if (!passwordOk)
         {
-            user.FailedLoginCount++;
-            if (user.FailedLoginCount >= 5)
+            if (!isDemoAccount) user.FailedLoginCount++;
+            if (!isDemoAccount && user.FailedLoginCount >= 5)
             {
                 user.FailedLoginCount = 0;
                 user.LockoutEnd = DateTimeOffset.UtcNow.AddMinutes(15);

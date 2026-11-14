@@ -161,7 +161,7 @@ export default function SubmitObservation(props: Props) {
               <CheckCircle2 className="mx-auto h-10 w-10 text-route" />
                 <h1 className="mt-4 text-[22px] font-semibold">Observation saved</h1>
               <p className="mt-2 text-[14px] leading-relaxed text-space-100">
-                <span className="font-mono text-space-50">{submittedId}</span> was validated by the server and saved to your account.
+                <span className="font-mono text-space-50">{submittedId}</span> was saved in this browser.
               </p>
               <div className="mt-6 flex justify-center gap-2">
                 <button
@@ -322,7 +322,7 @@ export default function SubmitObservation(props: Props) {
                         ))}
                       </ul>
                     )}
-                    <p className="text-[12px] text-space-200">JPEG, PNG, or WebP · up to 5 photos · 5 MB each. Photos upload when you submit.</p>
+                    <p className="text-[12px] text-space-200">JPEG, PNG, or WebP · up to 5 photos · 5 MB each. Photos are saved in this browser.</p>
                     {uploadError && <p role="alert" className="text-[12px] text-hazard">{uploadError}</p>}
                     <Field label="Additional scientific notes">
                       <textarea value={f.notes} onChange={(e) => set('notes', e.target.value)} rows={2} className={input} />
@@ -374,12 +374,12 @@ export default function SubmitObservation(props: Props) {
                   <p className="mt-2 text-[12px] text-space-200">Click the map to move the point.</p>
 
                   <div className="mt-5 rounded-lg border border-space-800 p-3 text-[12px] leading-relaxed text-space-200">Verified elevation, geology, temperature, radiation, mineral, and hazard layers are not connected for this location.</div>
-                  <div className="mt-5 rounded-lg bg-space-900 p-4 text-[12px] leading-relaxed text-space-100">
+          <div className="mt-5 rounded-lg bg-space-900 p-4 text-[12px] leading-relaxed text-space-100">
                     <p className="font-semibold text-space-50">After you submit</p>
                     <ol className="mt-1.5 list-decimal space-y-1 pl-4">
-                      <li>Server validates fields, coordinates and files.</li>
-                      <li>Your observation and any photos are stored on your crew account.</li>
-                      <li>You can find it later under My observations.</li>
+                      <li>The form checks your fields and coordinates in the browser.</li>
+                      <li>Your observation and photos stay in this browser.</li>
+                      <li>You can find it later under My observations on this device.</li>
                     </ol>
                   </div>
                 </aside>

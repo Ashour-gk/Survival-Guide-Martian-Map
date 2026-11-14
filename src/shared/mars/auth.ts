@@ -1,9 +1,6 @@
-// Roles and permissions for MARS EXPLORER.
-//
-// This file is the single source of truth for who may do what. The UI reads
-// it to decide what to show, and docs/backend spec mirrors it one-to-one as
-// server middleware. Hiding a button is never the security: every action in
-// the API is re-checked server-side against the same matrix.
+// Demo roles and permissions for the browser-only MARS EXPLORER UI.
+// These checks control which local demo controls are shown; they are not an
+// authentication or security boundary.
 
 export type Role = 'admin' | 'astronaut' | 'researcher'
 

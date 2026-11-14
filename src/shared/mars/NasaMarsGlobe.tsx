@@ -9,7 +9,7 @@ export function NasaMarsGlobe({ className = '' }: { className?: string }) {
         key: `${row}-${column}`,
         row,
         column,
-        src: `/api/v1/map/tiles/viking/${zoom}/${row}/${column}.jpg`,
+        src: `https://trek.nasa.gov/tiles/Mars/EQ/Mars_Viking_MDIM21_ClrMosaic_global_232m/1.0.0/default/default028mm/${zoom}/${row}/${column}.jpg`,
       })),
     ).flat()
   }, [])

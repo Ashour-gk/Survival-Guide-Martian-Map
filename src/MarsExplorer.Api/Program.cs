@@ -1,4 +1,5 @@
 using System.Threading.RateLimiting;
+using MarsExplorer.Api;
 using MarsExplorer.Domain;
 using MarsExplorer.Infrastructure;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -19,11 +20,44 @@ if (builder.Environment.IsDevelopment())
     builder.Logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Warning);
 }
 
-var databaseProvider = builder.Configuration["Database:Provider"] ?? "SqlServer";
-var connectionString = databaseProvider.Equals("Sqlite", StringComparison.OrdinalIgnoreCase)
-    ? builder.Configuration.GetConnectionString("MarsExplorerSqlite") ?? "Data Source=mars-explorer.db;Cache=Shared"
-    : builder.Configuration.GetConnectionString("MarsExplorer")
-      ?? throw new InvalidOperationException("ConnectionStrings:MarsExplorer is required for SQL Server.");
+
+var databaseProvider = builder.Configuration["Database:Provider"] ?? "Sqlite";
+
+string connectionString;
+
+if (databaseProvider.Equals("Sqlite", StringComparison.OrdinalIgnoreCase))
+{
+    var databaseFolder = Path.Combine(
+        builder.Environment.ContentRootPath,
+        "App_Data"
+    );
+
+    Directory.CreateDirectory(databaseFolder);
+
+    var databasePath = Path.Combine(
+        databaseFolder,
+        "mars-explorer.db"
+    );
+
+    connectionString =
+        builder.Configuration.GetConnectionString("MarsExplorerSqlite")
+        ?? $"Data Source={databasePath};Cache=Shared";
+}
+else if (databaseProvider.Equals("SqlServer", StringComparison.OrdinalIgnoreCase))
+{
+    connectionString =
+        builder.Configuration.GetConnectionString("MarsExplorer")
+        ?? throw new InvalidOperationException(
+            "ConnectionStrings:MarsExplorer is required for SQL Server."
+        );
+}
+else
+{
+    throw new InvalidOperationException(
+        $"Unsupported Database:Provider '{databaseProvider}'."
+    );
+}
+
 
 builder.Services.AddDbContext<MarsExplorerDbContext>(options =>
 {
@@ -131,35 +165,70 @@ await using (var scope = app.Services.CreateAsyncScope())
     }
 }
 
-if (app.Environment.IsDevelopment())
-{
-    var testCrewId = builder.Configuration["MarsExplorer:TestCrewId"]?.Trim();
-    var testPassword = builder.Configuration["MarsExplorer:TestPassword"];
-    testCrewId = string.IsNullOrWhiteSpace(testCrewId) ? "MARS-DEMO" : testCrewId;
-    testPassword = string.IsNullOrWhiteSpace(testPassword) ? "MarsDemoLocal2026!" : testPassword;
-    if (testPassword.Length < 12)
-        throw new InvalidOperationException("MarsExplorer:TestPassword must contain at least 12 characters.");
+var demoCrewId = builder.Configuration["MarsExplorer:DemoCrewId"]?.Trim();
+var demoPassword = builder.Configuration["MarsExplorer:DemoPassword"];
+demoCrewId = string.IsNullOrWhiteSpace(demoCrewId) ? DemoAccountDefaults.CrewId : demoCrewId;
+demoPassword = string.IsNullOrWhiteSpace(demoPassword) ? DemoAccountDefaults.Password : demoPassword;
+if (demoPassword.Length < 12)
+    throw new InvalidOperationException("MarsExplorer:DemoPassword must contain at least 12 characters.");
 
-    await using var scope = app.Services.CreateAsyncScope();
+await using (var scope = app.Services.CreateAsyncScope())
+{
     var db = scope.ServiceProvider.GetRequiredService<MarsExplorerDbContext>();
     var hasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher<ApplicationUser>>();
-    var user = await db.Users.FirstOrDefaultAsync(x => x.CrewId == testCrewId, app.Lifetime.ApplicationStopping);
+    var user = await db.Users.FirstOrDefaultAsync(x => x.CrewId == demoCrewId, app.Lifetime.ApplicationStopping);
     if (user is null)
     {
         user = new ApplicationUser
         {
-            Id = Guid.NewGuid(), CrewId = testCrewId, DisplayName = "Local Demo Crew",
-            Email = $"{testCrewId.ToLowerInvariant()}@local.test", Role = "Astronaut", Status = "Active",
+            Id = Guid.NewGuid(), CrewId = demoCrewId, DisplayName = "Public Demo Crew",
+            Email = $"{demoCrewId.ToLowerInvariant()}@demo.invalid", Role = "Researcher", Status = "Active",
             PasswordHash = string.Empty, CreatedAt = DateTimeOffset.UtcNow,
         };
         db.Users.Add(user);
     }
-    user.PasswordHash = hasher.HashPassword(user, testPassword);
+    user.DisplayName = "Public Demo Crew";
+    user.PasswordHash = hasher.HashPassword(user, demoPassword);
+    user.Role = "Researcher";
     user.Status = "Active";
     user.FailedLoginCount = 0;
     user.LockoutEnd = null;
     await db.SaveChangesAsync(app.Lifetime.ApplicationStopping);
-    Console.WriteLine($"Configured local development demo crew account: {testCrewId}");
+    Console.WriteLine($"Configured public read-only demo account: {demoCrewId}");
+}
+
+if (app.Environment.IsDevelopment())
+{
+    var testCrewId = builder.Configuration["MarsExplorer:TestCrewId"]?.Trim();
+    var testPassword = builder.Configuration["MarsExplorer:TestPassword"];
+    if (!string.IsNullOrWhiteSpace(testCrewId) && !string.IsNullOrWhiteSpace(testPassword))
+    {
+        if (string.Equals(testCrewId, demoCrewId, StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException("MarsExplorer:TestCrewId must be different from the public demo Crew ID.");
+        if (testPassword.Length < 12)
+            throw new InvalidOperationException("MarsExplorer:TestPassword must contain at least 12 characters.");
+
+        await using var scope = app.Services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<MarsExplorerDbContext>();
+        var hasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher<ApplicationUser>>();
+        var user = await db.Users.FirstOrDefaultAsync(x => x.CrewId == testCrewId, app.Lifetime.ApplicationStopping);
+        if (user is null)
+        {
+            user = new ApplicationUser
+            {
+                Id = Guid.NewGuid(), CrewId = testCrewId, DisplayName = "Local Test Crew",
+                Email = $"{testCrewId.ToLowerInvariant()}@local.test", Role = "Astronaut", Status = "Active",
+                PasswordHash = string.Empty, CreatedAt = DateTimeOffset.UtcNow,
+            };
+            db.Users.Add(user);
+        }
+        user.PasswordHash = hasher.HashPassword(user, testPassword);
+        user.Status = "Active";
+        user.FailedLoginCount = 0;
+        user.LockoutEnd = null;
+        await db.SaveChangesAsync(app.Lifetime.ApplicationStopping);
+        Console.WriteLine($"Configured local test crew account: {testCrewId}");
+    }
 }
 
 await app.RunAsync();

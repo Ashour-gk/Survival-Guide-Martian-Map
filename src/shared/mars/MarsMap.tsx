@@ -178,8 +178,8 @@ export function MarsMap({
         const north = 90 - row * tileLatSpan
         tiles.push({
           key: `${source.id}-${source.z}-${row}-${column}`,
-          href: `/api/v1/map/tiles/${source.id}/${source.z}/${row}/${column}.${source.extension}`,
           directHref: `https://trek.nasa.gov/tiles/Mars/EQ/${NASA_LAYER_IDS[source.id]}/1.0.0/default/default028mm/${source.z}/${row}/${column}.${source.extension}`,
+          href: `https://trek.nasa.gov/tiles/Mars/EQ/${NASA_LAYER_IDS[source.id]}/1.0.0/default/default028mm/${source.z}/${row}/${column}.${source.extension}`,
           x: (west - ORIGIN.lon) / lonPerUnit,
           y: (ORIGIN.lat - north) / latPerUnit,
           width: tileLonSpan / lonPerUnit,
@@ -272,7 +272,7 @@ export function MarsMap({
           }}
         />
       ))}
-      {tileResultCount === nasaTiles.length && loadedTileCount === 0 && <g pointerEvents="none"><rect x="250" y="335" width="500" height="80" rx="12" fill={C.ink} fillOpacity="0.94" stroke={C.hazard} /><text x="500" y="370" textAnchor="middle" fill={C.light} fontSize="17" fontWeight="600">NASA map tiles failed to load</text><text x="500" y="396" textAnchor="middle" fill={C.light} fontSize="13">Check that the API is running and the selected layer has coverage here.</text></g>}
+      {tileResultCount === nasaTiles.length && loadedTileCount === 0 && <g pointerEvents="none"><rect x="250" y="335" width="500" height="80" rx="12" fill={C.ink} fillOpacity="0.94" stroke={C.hazard} /><text x="500" y="370" textAnchor="middle" fill={C.light} fontSize="17" fontWeight="600">NASA map tiles failed to load</text><text x="500" y="396" textAnchor="middle" fill={C.light} fontSize="13">Check your connection or choose another map layer.</text></g>}
 
       {layers.geology && (
         <g opacity={op('geology', 0.5)}>
